@@ -1,0 +1,166 @@
+struct _List_node_base
+    {
+      _List_node_base* _M_next;
+      _List_node_base* _M_prev;
+      ...
+    };
+
+struct _List_node_header : public _List_node_base
+{
+    _List_node_header() _GLIBCXX_NOEXCEPT
+      { _M_init(); }
+
+    _List_node_header(_List_node_header&& __x) noexcept
+      : _List_node_base{ __x._M_next, __x._M_prev } {}
+      
+      
+};
+
+
+
+template<typename _Tp>
+    struct _List_node : public _List_node_base
+    {
+#if __cplusplus >= 201103L
+      __gnu_cxx::__aligned_membuf<_Tp> _M_storage;
+      _Tp*       _M_valptr()       { return _M_storage._M_ptr(); }
+      _Tp const* _M_valptr() const { return _M_storage._M_ptr(); }
+#else
+      _Tp _M_data;
+      _Tp*       _M_valptr()       { return std::__addressof(_M_data); }
+      _Tp const* _M_valptr() const { return std::__addressof(_M_data); }
+#endif
+    };
+    
+    
+template<typename _Tp, typename _Alloc>
+class _List_base
+{
+ protected:
+      typedef typename __gnu_cxx::__alloc_traits<_Alloc>::template
+	      rebind<_Tp>::other				_Tp_alloc_type;
+      typedef __gnu_cxx::__alloc_traits<_Tp_alloc_type>	_Tp_alloc_traits;
+      typedef typename _Tp_alloc_traits::template
+	      rebind<_List_node<_Tp> >::other _Node_alloc_type;
+      typedef __gnu_cxx::__alloc_traits<_Node_alloc_type> _Node_alloc_traits;
+      
+      struct _List_impl
+      : public _Node_alloc_type
+      {
+	        _List_node_header _M_node;
+      }
+  
+ 
+     _List_impl _M_impl;
+}
+
+
+template<typename _Tp, typename _Alloc = std::allocator<_Tp> >
+ class list : protected _List_base<_Tp, _Alloc>
+ {
+      typedef _List_base<_Tp, _Alloc>			_Base;
+      typedef typename _Base::_Tp_alloc_type		_Tp_alloc_type;
+      typedef typename _Base::_Tp_alloc_traits		_Tp_alloc_traits;
+      typedef typename _Base::_Node_alloc_type		_Node_alloc_type;
+      typedef typename _Base::_Node_alloc_traits	_Node_alloc_traits;
+
+    public:
+      typedef _Tp					 value_type;
+      typedef typename _Tp_alloc_traits::pointer	 pointer;
+      typedef typename _Tp_alloc_traits::const_pointer	 const_pointer;
+      typedef typename _Tp_alloc_traits::reference	 reference;
+      typedef typename _Tp_alloc_traits::const_reference const_reference;
+      typedef _List_iterator<_Tp>			 iterator;
+      typedef _List_const_iterator<_Tp>			 const_iterator;
+      typedef std::reverse_iterator<const_iterator>	 const_reverse_iterator;
+      typedef std::reverse_iterator<iterator>		 reverse_iterator;
+      typedef size_t					 size_type;
+      typedef ptrdiff_t					 difference_type;
+      typedef _Alloc					 allocator_type;
+
+    protected:
+      // Note that pointers-to-_Node's can be ctor-converted to
+      // iterator types.
+      typedef _List_node<_Tp>				 _Node;
+
+      using _Base::_M_impl;
+      using _Base::_M_put_node;
+      using _Base::_M_get_node;
+      using _Base::_M_get_Node_allocator;
+ }
+
+
+template<typename _Tp>
+     struct _List_iterator
+    {
+      typedef _List_iterator<_Tp>		_Self;
+      typedef _List_node<_Tp>			_Node;
+
+      typedef ptrdiff_t				difference_type;
+      typedef std::bidirectional_iterator_tag	iterator_category;
+      typedef _Tp				value_type;
+      typedef _Tp*				pointer;
+      typedef _Tp&				reference;
+    
+     _List_node_base* _M_node;
+     }
+    
+template<typename _Tp>
+    struct _List_const_iterator
+    {
+      typedef _List_const_iterator<_Tp>		_Self;
+      typedef const _List_node<_Tp>		_Node;
+      typedef _List_iterator<_Tp>		iterator;
+
+      typedef ptrdiff_t				difference_type;
+      typedef std::bidirectional_iterator_tag	iterator_category;
+      typedef _Tp				value_type;
+      typedef const _Tp*			pointer;
+      typedef const _Tp&			reference;
+      
+      
+      const _List_node_base* _M_node;
+     }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
